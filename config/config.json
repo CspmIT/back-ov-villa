@@ -1,21 +1,21 @@
 {
 	"coopm_villa": {
 		"database": "ov_villa_trinidad",
-		"username": "reconecta",
-		"password": "PgHQGFEgMEfsuEKfB6tV",
-		"host": "172.26.5.100",
+		"username": "desarrollo",
+		"password": "NvV5WLKM1fn6L44bG5O0pZS",
+		"host": "172.26.5.101",
 		"port": 3306,
 		"dialect": "mysql"
 	},
 	"bd_villa": {
-		"database": "coop",
-		"username": "OV",
-		"password": "Cspm2024!",
-		"host": "172.26.5.232",
+		"database": "gv6-coopserviciosvt",
+		"username": "morteros",
+		"password": "Soporteit!.",
+		"host": "10.8.0.13",
 		"port": 3306,
 		"dialect": "mysql"
 	},
-	"cooptech": {
+	"cooptech": { 
 		"database": "cooptech",
 		"username": "reconecta",
 		"password": "PgHQGFEgMEfsuEKfB6tV",

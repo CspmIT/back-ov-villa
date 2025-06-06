@@ -10,6 +10,8 @@ const { Commentaries, Popups, addPopup, addInformation, Informations, addImageIn
     Users, addMaterialsClaim, MaterialsClaim, toolsClaim, addTechnicianClaim, TechnicianClaim, methodEnableds, addMethodEnableds
 } = require('../controllers/Managment.controller')
 const { relationUserCooptech, loginCooptech, tokenCooptech, OVCliente, Methods } = require('../controllers/Cooptech.controller')
+const { testConnectionVilla } = require('../database/MySQL.database')
+const { paymentStatus } = require('../controllers/Payment.controller')
 
 // RUTAS PARA AUTH
 
@@ -60,9 +62,14 @@ router.post('/addTechnicianClaim', addTechnicianClaim)
 router.get('/getTechnicianClaim', TechnicianClaim)
 router.post('/addMethodEnableds', addMethodEnableds)
 router.get('/getmethodEnableds', methodEnableds)
+router.get('/estadoPago', paymentStatus)
+
 
 //datos cooptech 
 router.get('/OVCliente/:id', OVCliente);
 router.get('/getMethods', Methods);
+
+router.get('/testConnection', testConnectionVilla);
+
 
 module.exports = router

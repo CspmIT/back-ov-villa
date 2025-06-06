@@ -16,10 +16,10 @@ module.exports = (sequelize, DataTypes) => {
   PaysDetails.init({
     id_pay: DataTypes.INTEGER,
     description: DataTypes.STRING,
-    account: DataTypes.INTEGER,
+    customer: DataTypes.INTEGER,
+    name_customer: DataTypes.STRING,
     amount: DataTypes.DECIMAL,
     reference: DataTypes.STRING,
-    ss: DataTypes.BOOLEAN,
   }, {
     sequelize,
     modelName: 'PaysDetails',

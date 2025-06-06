@@ -9,7 +9,7 @@ const { getListState, getListCity, getListStreet, newStreet, getAddress, newStre
 const { addCommentary, activePopups } = require('../controllers/Managment.controller')
 // const { newRequestService, getRequestsByUser } = require('../controllers/RequestService.controller')
 const { peopleByDocumentNumber } = require('../controllers/Person.controller')
-const { payLink } = require('../controllers/Payment.controller')
+const { payLink, paymentMethods, voucherCustomer } = require('../controllers/Payment.controller')
 
 
 router.get('/test', (req, res) => {
@@ -68,6 +68,8 @@ router.post('/searchPeopleByDocumentNumber', verifyToken, peopleByDocumentNumber
 
 router.post('/addCommentary', verifyToken, addCommentary)
 router.post('/getUsersRegistered', verifyToken, usersRegistered)
+router.get('/payMethods', verifyToken, paymentMethods)
 router.post('/payLink', verifyToken, payLink)
+router.get('/getBillsCustomer', verifyToken, voucherCustomer)
 
 module.exports = router

@@ -145,7 +145,7 @@ const createPersonVilla = async (dataUpdate, user, dataVilla, t) => {
 		const dniGuardar =  dni.replace(/\./g, '');
 		// SE GENERA UN OBJETO DONDE TENGA TODO LOS VALORES DE PROCOOP, PARA QUE EN CASO DE QUE NO EXISTA CREARLO
 		const dataVillaMember = {
-			procoop_last_name: dataVilla.nombre,
+			// procoop_last_name: dataVilla.nombre,
 			email: dataVilla.email,
 			number_customer: dataUpdate.number_customer,
 			type_person: user.type_person,
@@ -211,13 +211,13 @@ const createPersonVilla = async (dataUpdate, user, dataVilla, t) => {
 const updatePersonUserCreated = async (dataUpdate, user, dataPerson, t) => {
 	try {
 		const dataInfo = {
-			procoop_last_name: dataUpdate.last_name_customer || null,
+			// procoop_last_name: dataUpdate.last_name_customer || null,
 			fixed_phone: dataUpdate.fixed_phone || null,
 			situation_tax: dataUpdate.situation_tax || null,
 		}
 		// SE GENERA UIN OBJETO CON LOS DATOS DEL PERFIL DEL USUARIO PARA ACTUALIZAR LA PERSONA QUE SE CREO ANTES YA QUE NO EXISTIA CON ESE DNI
 		const dataPersonUser = {
-			procoop_last_name: dataInfo.procoop_last_name,
+			// procoop_last_name: dataInfo.procoop_last_name,
 			email: user.email,
 			number_customer: dataUpdate.number_customer,
 			type_person: user.type_person,
@@ -258,7 +258,7 @@ const updatePersonUserCreated = async (dataUpdate, user, dataPerson, t) => {
 		// SI NO EXISTE SE DEVUELVE UN ERROR
 		if (!userData) throw new Error('No se encontro usuario con ese id')
 
-		await userData.update({ id_person_profile: PersonUser.id, lvl2_date: new Date() }, { transaction: t })
+		await userData.update({ id_person_profile: PersonUser.id, lvl2_date: new Date(), address: dataUpdate.id_street }, { transaction: t })
 		return PersonUser
 	} catch (error) {
 		throw error
@@ -305,7 +305,7 @@ const updateLvl2 = async (user, dataUpdate) => {
 			const dni = dataVilla?.numeroDocumento ? dataVilla.numeroDocumento : '';
 			const dniGuardar = dni.replace(/\./g, ''); 
 			const dataPersonUser = {
-				procoop_last_name: dataVilla.nombre,
+				// procoop_last_name: dataVilla.nombre,
 				email: user.email,
 				number_customer: dniGuardar == dataUpdate.numeroDocumento ? dataUpdate.number_customer : null,
 				type_person: user.type_person,
@@ -336,7 +336,7 @@ const updateLvl2 = async (user, dataUpdate) => {
 					const [relationVilla, createRelation] = await db.User_People.findOrCreate({ where: { id_user: user.id, id_person: PersonUser.id }, defaults: { ...relationPerson }, transaction: t })
 					// EN CASO DE QUE SE ENCUENTRE UN REGISTRO CON ESOS VALORES SE ACTUALIZA EL REGISTRO
 					if (!createRelation) await relationVilla.update(relationPerson, { transaction: t })
-					await createAddressUser(dataUpdate, PersonUser, t)
+					// await createAddressUser(dataUpdate, PersonUser, t)
 				} else {
 					// EN CASO DE QUE LOS DNI SEAN IGUALES DEBO CREAR UN SOLO REGISTRO DE PERSONA CON LOS DATOS CARGADOS POR EL USUARIO
 					const PersonUser = await updatePersonUserCreated(dataUpdate, user, dataPerson, t)
@@ -351,7 +351,7 @@ const updateLvl2 = async (user, dataUpdate) => {
 					const [relationVilla, createRelation] = await db.User_People.findOrCreate({ where: { id_user: user.id, id_person: PersonUser.id }, defaults: { ...relationPerson }, transaction: t })
 					// EN CASO DE QUE SE ENCUENTRE UN REGISTRO CON ESOS VALORES SE ACTUALIZA EL REGISTRO
 					if (!createRelation) await relationVilla.update(relationPerson, { transaction: t })
-					await createAddressUser(dataUpdate, PersonUser, t)
+					// await createAddressUser(dataUpdate, PersonUser, t)
 				}
 			} else {
 				const PersonUser = await updatePersonUserCreated(dataUpdate, user, dataPerson, t)
@@ -366,7 +366,7 @@ const updateLvl2 = async (user, dataUpdate) => {
 				const [relationVilla, createRelation] = await db.User_People.findOrCreate({ where: { id_user: user.id, id_person: PersonUser.id }, defaults: { ...relationPerson }, transaction: t })
 				// EN CASO DE QUE SE ENCUENTRE UN REGISTRO CON ESOS VALORES SE ACTUALIZA EL REGISTRO
 				if (!createRelation) await relationVilla.update(relationPerson, { transaction: t })
-				await createAddressUser(dataUpdate, PersonUser, t)
+				// await createAddressUser(dataUpdate, PersonUser, t)
 			}
 			return dataPerson
 		} catch (error) {
@@ -483,6 +483,7 @@ const getUserxNumCustomer = async (num) => {
 		let responseData
 		if (!user) {
 			user = await Cliente_x_code(num)
+			console.log(Cliente_x_code);
 			fullName = user[0].nombre;
 			const name = fullName.split(' ');
 			responseData = { name: name.slice(1).join(' '), last_name: name[0] }
