@@ -1,12 +1,12 @@
-const { QueryTypes } = require('sequelize')
+const { QueryTypes,  Op, col } = require('sequelize')
 const { SequelizeVilla } = require('../database/MSSQL.database')
 const { db } = require('../models')
 
 const Cliente_x_code = async (numberCustomer) => {
 	try {
 		if (!numberCustomer) throw new Error('falta pasar el numero de socio')
-		const user = await db.Person.findOne({ where: { number_customer: numberCustomer }, include: [{ association: 'Person_physical' }, { association: 'Person_legal' }] })
-		if (user) return user.get()
+		// const user = await db.Person.findOne({ where: { number_customer: numberCustomer }, include: [{ association: 'Person_physical' }, { association: 'Person_legal' }] })
+		// if (user) return user.get()
 		const query = `SELECT * FROM clientes WHERE codigo = :numberCustomer AND inactivo = 0`
 		const result = await SequelizeVilla.query(query, {
 			replacements: { numberCustomer: numberCustomer },
@@ -56,6 +56,69 @@ const debtsCustomerVilla = async (number, all) => {
 		throw error;
 	}
 };
+
+const getPaysCancel = async (CompCancelado) => {
+	try {
+		const query = `select * from oficinav where CompCancelado = :CompCancelado`;
+
+		const result = await SequelizeVilla.query(query, {
+			replacements: { CompCancelado: CompCancelado },
+			type: SequelizeVilla.QueryTypes.SELECT,
+		});
+
+		return result;
+	} catch (error) {
+		throw error;
+	}
+};
+
+const debtsCustomerOV = async (number) => {
+	try {
+		const paymentDetails = await db.PaysDetails.findAll({
+			where: {
+				reference: number,
+			},
+			include: {
+				model: db.Pays,
+				as: 'pays',
+				required: true,
+				where: {
+					status: 1
+				}
+			}
+		});
+
+		return paymentDetails.length > 0
+	} catch (error) {
+		throw error;
+	}
+};
+
+const paysCancel = async (data) => {
+	try {
+		const query = `
+			INSERT INTO oficinav 
+			(CompCancelado, FechaCobro, Procesado, CodBanco) 
+			VALUES (:CompCancelado, :FechaCobro, :Procesado, :CodBanco)
+		`;
+		const result = await SequelizeVilla.query(query, {
+			replacements: {
+				CompCancelado: data.CompCancelado,
+				FechaCobro: data.FechaCobro,
+				Procesado: data.Procesado,
+				CodBanco: data.CodBanco
+			},
+			type: SequelizeVilla.QueryTypes.INSERT, 
+		});
+
+
+		return result;
+	} catch (error) {
+		throw error;
+	}
+};
+
+
 
 const getOrCreateMember = async (body, user) => {
 	return db.sequelize.transaction(async (t) => {
@@ -154,6 +217,9 @@ const getOrCreateMember = async (body, user) => {
 module.exports = {
 	Cliente_x_code,
 	debtsCustomerVilla,
+	debtsCustomerOV,
 	getOrCreateMember,
-	Service_x_code
+	Service_x_code,
+	paysCancel,
+	getPaysCancel
 }

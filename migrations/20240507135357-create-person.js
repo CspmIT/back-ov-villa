@@ -9,9 +9,6 @@ module.exports = {
 				primaryKey: true,
 				type: Sequelize.INTEGER,
 			},
-			procoop_last_name: {
-				type: Sequelize.STRING,
-			},
 			email: {
 				type: Sequelize.STRING,
 			},

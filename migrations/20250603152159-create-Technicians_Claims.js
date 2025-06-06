@@ -2,39 +2,24 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Claim', {
+    await queryInterface.createTable('Technicians_Claims', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      description: {
-        type: Sequelize.STRING
-      },
-      type: {
-        type: Sequelize.INTEGER
-      },
-      service: {
-        type: Sequelize.INTEGER
-      },
-      user_id: {
+      id_claim: {
 				type: Sequelize.INTEGER,
 				references: {
-          model: 'Users',
+					model: 'Claim',
 					key: 'id',
 				},
 				onUpdate: 'CASCADE',
 				onDelete: 'CASCADE',
 			},
-      customer: {
-        type: Sequelize.STRING
-      },
-      observations: {
-        type: Sequelize.STRING
-      },
-      status: {
-        type: Sequelize.BOOLEAN
+      id_technician: {
+        type: Sequelize.INTEGER,
       },
       createdAt: {
         allowNull: false,
@@ -47,6 +32,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('claims');
+    await queryInterface.dropTable('Technicians_Claims');
   }
 };

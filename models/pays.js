@@ -15,14 +15,13 @@ module.exports = (sequelize, DataTypes) => {
   }
   Pays.init({
     id_user: DataTypes.INTEGER,
-    customer: DataTypes.INTEGER,
-    name_customer: DataTypes.STRING,
+    name_user: DataTypes.STRING,
     total: DataTypes.DECIMAL,
-    id_external: DataTypes.STRING,
-    type_pay: DataTypes.STRING,
     id_method: DataTypes.INTEGER,
     status: DataTypes.INTEGER,
     message: DataTypes.STRING,
+    type_pay: DataTypes.STRING,
+    id_external: DataTypes.STRING,
   }, {
     sequelize,
     modelName: 'Pays',
