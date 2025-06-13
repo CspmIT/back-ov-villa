@@ -139,6 +139,216 @@ const getUsersRegistered = async (id) => {
 	}
 }
 
+const createPerson = async (data, t) => {
+    try {
+        const person = await db.Person.create(data, { transaction: t })
+        return person
+    } catch (error) {
+        await t.rollback()
+        throw error
+    }
+}
+
+const createPhysicalIfNotExists = async (data, person, user, customerVilla, t ) => {
+    try {
+        const physical = await db.Person_physical.create(
+            {
+                name: user.name_register,
+                last_name: user.last_name_register,
+                type_dni: data.document_type,
+                num_dni: data.document_number,
+                born_date: formatDate(data.birthdate),
+                id_type_sex: data.sex,
+                id_person: person.id,
+            },
+            { transaction: t }
+        )
+
+		const address = await db.Address.create(
+            {
+                number_address: data.number_address,
+                id_street: data.id_street,
+                id_city: data.id_city,
+                id_state: data.id_state,
+            },
+            { transaction: t }
+        )
+
+        await db.Person_Address.create(
+            {
+                status: true,
+                id_person: person.id,
+				id_address: address.id,
+            },
+            { transaction: t }
+        )
+
+        // Creo la relacion de User_People
+        const userPeople = await db.User_People.create(
+            {
+                customer_number: data.number_customer,
+                customer_last_name: customerVilla.nombre,
+                id_user: user.id,
+                level: data.level,
+                primary_account: true,
+                status: 1,
+				id_person: person.id,
+            },
+            { transaction: t }
+        )
+
+        return {
+            person,
+            physical,
+            userPeople,
+        }
+    } catch (error) {
+        throw error
+    }
+}
+
+const createLegalIfNotExists = async (data, person, user, customerVilla, t ) => {
+    try {
+        const legal = await db.Person_legal.create(
+            {
+                social_raeson: user.name_register,
+                fantasy_name: user.last_name_register,
+                cuit: data.document_number,
+                date_registration: formatDate(data.birthdate),
+				id_person: person.id
+            },
+            { transaction: t }
+        )
+		
+		const address = await db.Address.create(
+            {
+                number_address: data.number_address,
+                id_street: data.id_street,
+                id_city: data.id_city,
+                id_state: data.id_state,
+            },
+            { transaction: t }
+        )
+
+        await db.Person_Address.create(
+            {
+                status: true,
+                id_person: person.id,
+				id_address: address.id,
+            },
+            { transaction: t }
+        )
+
+        // Creo la relacion de User_People
+        const userPeople = await db.User_People.create(
+            {
+				customer_number: data.number_customer,
+                customer_last_name: customerVilla.nombre,
+                id_user: user.id,
+                level: data.level,
+                primary_account: true,
+                status: 1,
+            },
+            { transaction: t }
+        )
+
+		return {
+            person,
+            legal,
+            userPeople,
+        }
+
+    } catch (error) {
+        throw error
+    }
+}
+
+
+const levelUp = async (data) => {
+    const t = await db.sequelize.transaction()
+    try {
+        const user = await db.User.findOne({
+            where: { id: data.id },
+        })
+        if (!user) throw new Error('El usuario no existe')
+        // const customerProcoop = await findCustomerByCodSoc(data.number_customer)
+		const customerVilla = await Cliente_x_code(data.number_customer)
+        if (!customerVilla) throw new Error('El socio no existe')
+        const person = await db.Person.findOne({
+            where: { number_document: data.document_number },
+        })
+        // Si no existe la persona, se crea
+        let people
+        if (!person) {
+            people = await createPerson(
+                {
+                    email: user.email,
+                    type_person: user.type_person,
+                    cell_phone: `${data.phoneCaract} ${data.numberPhone}`,
+                    type_document: data.document_type,
+                    number_document: data.document_number,
+                },
+                t
+            )
+
+            await user.update(
+                { id_person_profile: people.id },
+                { transaction: t }
+            )
+
+            if (user.type_person === 1) {
+                const { person, physical, userPeople } =
+                    await createPhysicalIfNotExists(
+                        data,
+                        people,
+                        user,
+                        customerVilla[0],
+                        t
+                    )
+                await t.commit()
+                return { person, physical, userPeople, user }
+            }else{
+				const { person, legal, userPeople } =
+				await createLegalIfNotExists(
+					data,
+					people,
+					user,
+					customerVilla[0],
+					t
+				)
+				await t.commit()
+				return { person, legal, userPeople, user }
+			}
+        } else {
+            //Agrego el id de la persona al usuario
+            await user.update(
+                { id_person_profile: person.id },
+                { transaction: t }
+            )
+            // Si la persona existe, solo creo la relacion con userPeople
+            const userPeople = await db.User_People.create(
+                {
+					customer_number: data.number_customer,
+					customer_last_name: customerVilla.nombre,
+					id_user: user.id,
+					level: data.level,
+					primary_account: true,
+					status: 1,
+					id_person: person.id,
+                },
+                { transaction: t }
+            )
+            await t.commit()
+            return { person, userPeople, user }
+        }
+    } catch (error) {
+		if (!t.finished) {
+			await t.rollback();
+		}
+		throw error;
+    }
+}
+
 const createPersonVilla = async (dataUpdate, user, dataVilla, t) => {
 	try {
 		const dni = dataVilla?.numeroDocumento;
@@ -419,9 +629,6 @@ const getUserxDni = async (dni) => {
 											association: 'city',
 										},
 										{
-											association: 'street',
-										},
-										{
 											association: 'state',
 										},
 									],
@@ -449,9 +656,6 @@ const getUserxDni = async (dni) => {
 												association: 'city',
 											},
 											{
-												association: 'street',
-											},
-											{
 												association: 'state',
 											},
 										],
@@ -472,14 +676,16 @@ const getUserxDni = async (dni) => {
 const getUserxNumCustomer = async (num) => {
 	try {
 		user = await db.Person.findOne({
-			where: { number_customer: num },
 			include: [
-				{
-					association: 'Person_physical',
-				},
-				{ association: 'Person_legal' },
+			  { association: 'Person_physical' },
+			  { association: 'Person_legal' },
+			  {
+				association: 'User_People',
+				where: { customer_number: num },
+				required: true,
+			  },
 			],
-		})
+		  })
 		let responseData
 		if (!user) {
 			user = await Cliente_x_code(num)
@@ -501,6 +707,7 @@ const getUserxNumCustomer = async (num) => {
 		throw error
 	}
 }
+
 
 const deleteUserPerson = async (id) => {
 	return db.sequelize.transaction(async (t) => {
@@ -550,4 +757,5 @@ module.exports = {
 	getUsersRegistered,
 	getProfileUser,
 	getUserxId,
+	levelUp
 }

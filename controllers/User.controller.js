@@ -1,8 +1,9 @@
 const { savePerson, savePersonLegal, savePersonPhysical } = require('../services/PersonService.js')
-const { Persona_x_COD_SOC, getProcoopMemberxDni, allAccount, getDataProcoopxId } = require('../services/ProcoopService.js')
+const { Persona_x_COD_SOC, allAccount } = require('../services/ProcoopService.js')
 const ScriptService = require('../services/ScriptService.js')
-const { verifyEmailToken, getUser, getLevel, updateLvl2, saveUser, getUserxDni, getUserxNumCustomer, getUsersRegistered, getProfileUser, getUserxId } = require('../services/UserService.js')
-const { searchAddressxUser, saveAdrress, savePersonAdrress } = require('../services/locationServices.js')
+const { verifyEmailToken, getUser, getLevel, updateLvl2, levelUp, saveUser, getUserxDni, getUserxNumCustomer, getUsersRegistered, getProfileUser, getUserxId } = require('../services/UserService.js')
+const { saveAdrress, savePersonAdrress } = require('../services/locationServices.js')
+const { customerSchema } = require('../schemas/LevelUp/customer.schema.js')
 const bcrypt = require('bcrypt')
 
 const user = (req, res) => {}
@@ -122,23 +123,80 @@ async function dataUserProfile(req, res) {
 		}
 	}
 }
-async function upgradeUser(req, res) {
-	try {
-		const user = await getUser(req.user.id)
-		if (!user) throw new Error('El usuario no existe o ya ha sido validado.')
-		const response = await updateLvl2(user, req.body)
-		if (!response) throw new Error('El usuario no se pudo actualizar.')
-		if (response){
+// async function upgradeUser(req, res) {
+// 	try {
+// 		const user = await getUser(req.user.id)
+// 		if (!user) throw new Error('El usuario no existe o ya ha sido validado.')
+// 		const response = await updateLvl2(user, req.body)
+// 		if (!response) throw new Error('El usuario no se pudo actualizar.')
+// 		if (response){
 			
-		}
-		res.status(200).json(response)
-	} catch (error) {
-		if (error.errors) {
-			res.status(500).json(error.errors)
-		} else {
-			res.status(400).json(error.message)
-		}
-	}
+// 		}
+// 		res.status(200).json(response)
+// 	} catch (error) {
+// 		if (error.errors) {
+// 			res.status(500).json(error.errors)
+// 		} else {
+// 			res.status(400).json(error.message)
+// 		}
+// 	}
+// }
+
+async function addCustomerUser(req, res) {
+    try {
+        const {
+            number_customer,
+            name_customer,
+            document_type,
+            document_number,
+            sex,
+            id_state,
+            id_city,
+            id_street,
+            number_address,
+            phoneCaract,
+            numberPhone,
+            birthdate,
+            id,
+            level,
+        } = req.body
+
+        const user = {
+            id,
+            level,
+            name_customer,
+            number_customer: textToNumber(number_customer),
+            document_type: textToNumber(document_type),
+            document_number: textToNumber(document_number),
+            sex: textToNumber(sex),
+            id_state: textToNumber(id_state),
+            id_city: textToNumber(id_city),
+            id_street,
+            number_address: textToNumber(number_address),
+            phoneCaract: textToNumber(phoneCaract),
+            numberPhone: textToNumber(numberPhone),
+            birthdate,
+        }
+
+        const validCustomer = customerSchema.safeParse(user)
+        if (!validCustomer.success) {
+            throw new Error(validCustomer.error)
+        }
+
+        const saveCustomer = await levelUp(validCustomer.data)
+
+        return res.status(200).json(saveCustomer)
+    } catch (error) {
+        res.status(400).json(error.message)
+    }
+}
+
+function textToNumber(text) {
+    const number = parseInt(text)
+    if (isNaN(number)) {
+        throw new Error('El valor no se puede convertir a número')
+    }
+    return number
 }
 
 async function updateUser(req, res) {
@@ -311,7 +369,7 @@ module.exports = {
 	migrationUser,
 	tokenVerify,
 	dataUser,
-	upgradeUser,
+	// upgradeUser,
 	updateUser,
 	searchUserxDni,
 	getAllAccount,
@@ -320,4 +378,6 @@ module.exports = {
 	dataUserProfile,
 	updateProfile,
 	updatePhotoProfile,
+	addCustomerUser
 }
+ 

@@ -3,11 +3,6 @@ const { Model } = require('sequelize')
 module.exports = (sequelize, DataTypes) => {
 	class City extends Model {
 		static associate(models) {
-			City.belongsToMany(models.Street, {
-				through: 'Street_City',
-				as: 'Streets',
-				foreignKey: 'id_city',
-			})
 			City.hasMany(models.Address, {
 				foreignKey: 'id_city',
 				sourceKey: 'cod_loc',

@@ -14,6 +14,8 @@ module.exports = (sequelize, DataTypes) => {
 			level: DataTypes.INTEGER,
 			primary_account: DataTypes.BOOLEAN,
 			status: DataTypes.BOOLEAN,
+			customer_number: DataTypes.INTEGER,
+			customer_last_name: DataTypes.STRING,
 		},
 		{
 			sequelize,

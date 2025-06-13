@@ -97,3 +97,4 @@ const password_recover = async (req, res) => {
 }
 
 module.exports = { login, testConect, register, newQuery, logout, verifyRegister, password_recover }
+ 

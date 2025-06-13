@@ -124,16 +124,22 @@ const getOrCreateMember = async (body, user) => {
 	return db.sequelize.transaction(async (t) => {
 		try {
 			const { name_customer, last_name_customer, num_customer, type_person } = body
-			let Personvilla = await db.Person.findOne({ where: { number_customer: num_customer }, transaction: t })
+			let Personvilla = await db.Person.findOne({ include: [
+				{
+				  association: 'User_People',
+				  where: { customer_number: num_customer },
+				  required: true,
+				},
+			  ], transaction: t })
+			let dataVilla;
 			if (!Personvilla) {
 				const datoUser = await Cliente_x_code(num_customer)
 				if (!datoUser) throw new Error('El numero de socio no es correcto')
-				let dataVilla = datoUser[0]
+				dataVilla = datoUser[0]
 				const dni = dataVilla?.numeroDocumento;
 				const dniGuardar =  dni.replace(/\./g, '');
 				// SE GENERA UN OBJETO DONDE TENGA TODO LOS VALORES DE PROCOOP, PARA QUE EN CASO DE QUE NO EXISTA CREARLO
 				const dataVillaMember = {
-					procoop_last_name: dataVilla.nombre,
 					email: dataVilla.email,
 					number_customer: num_customer,
 					type_person: type_person,
@@ -146,8 +152,6 @@ const getOrCreateMember = async (body, user) => {
 				const [PersonvillaControl, createdPerson] = await db.Person.findOrCreate({ where: { number_document: dniGuardar }, defaults: { ...dataVillaMember }, transaction: t })
 				if (!createdPerson) {
 					const dataUpdatePerson = {
-						procoop_last_name: dataVilla.nombre,
-						number_customer: num_customer,
 						situation_tax: null,
 					}
 					await PersonvillaControl.update(dataUpdatePerson, { transaction: t })
@@ -193,19 +197,22 @@ const getOrCreateMember = async (body, user) => {
 				level: 2,
 				primary_account: false,
 				status: true,
+				customer_last_name: dataVilla.nombre,
+				customer_number: num_customer,
 			}
 			// SE BUSCA Y CREA UN REGISTRO DE USER_PEOPLE SEGUN EL ID DEL USUARIO
-			const [relationProcoop, create] = await db.User_People.findOrCreate({ where: { id_user: user.id, id_person: Personvilla.id }, defaults: { ...relationPersonvilla }, transaction: t })
+			const [relationVilla, create] = await db.User_People.findOrCreate({ where: { id_user: user.id, id_person: Personvilla.id }, defaults: { ...relationPersonvilla }, transaction: t })
 			// EN CASO DE QUE SE ENCUENTRE UN REGISTRO CON ESOS VALORES SE ACTUALIZA EL REGISTRO
-			if (!create) await relationProcoop.update(relationPersonvilla, { transaction: t })
+			if (!create) await relationVilla.update(relationPersonvilla, { transaction: t })
 
 			const dataResult = {
-				id_relation: relationProcoop.id,
-				name: Personvilla.procoop_last_name,
-				num: Personvilla.number_customer,
-				primary: relationProcoop.primary_account,
-				level: relationProcoop.level,
+				id_relation: relationVilla.id,
+				name: relationVilla.customer_last_name,
+				num: relationVilla.customer_number,
+				primary: relationVilla.primary_account,
+				level: relationVilla.level,
 			}
+
 			return dataResult
 		} catch (error) {
 			throw error

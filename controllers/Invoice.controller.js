@@ -1,27 +1,25 @@
 const axios = require('axios')
 const { debtsCustomerVilla, getPaysCancel, debtsCustomerOV } = require('../services/VillaService.js')
-const SambaClient = require('samba-client');
+const SMB2 = require('smb2');
 
 async function getInvoice(req, res) {
 	try {
 		const { socios, all } =  req.body;
 		const result = [];
 
-		// const facturas = await Facturas()
-		// console.log(facturas);
-
 		for (const item of socios) {
 			const debts = await debtsCustomerVilla(item.num, all);
 			if (!debts) {
 				continue;
 			}
-
 			let invoices = { codigo: item.num, list: [] };
 
 			for (const debt of debts) {
 				let precio = parseFloat(debt.importe) < 0 ? Math.abs(debt.importe) : debt.importe;
 
 				const comp = `${debt.tipoComprobante}${formatearNumero(debt.puntoVenta, 4)}${formatearNumero(debt.numero, 8)}`;
+				const pdf = `${debt.tipoComprobante}_${debt.puntoVenta}_${debt.numero}.pdf`;
+
 				var status
 				if (parseFloat(debt.importe) > 0) {
 					status = 0
@@ -48,7 +46,7 @@ async function getInvoice(req, res) {
 					nrovoucher: debt.numero,
 					vto: debt.fechaVencimiento,
 					amount: parseFloat(precio).toFixed(2),
-					url: ``,
+					url: pdf,
 					status: status,
 					number: debt.cliente,
 					nombre: debt.nombre,
@@ -87,37 +85,93 @@ async function existInvoice(req, res) {
 	}
 }
 
-const Facturas = async () => {
-	try {
-	  const client = new SambaClient({
-		address: '//10.8.0.13/pdf',
-		username: 'morteros',
-		password: 'C00p3m0rt3r0s#',
-	  });
-
-	  console.log(client);
-  
-	  const files = await new Promise((resolve, reject) => {
-		client.list('', (err, files) => {
-		  if (err) {
-			reject(err);
-		  } else {
-			resolve(files);
-		  }
+const Facturas = (pdf) => {
+	return new Promise((resolve, reject) => {
+		const smb2Client = new SMB2({
+			share: '\\\\10.8.0.13\\pdf',
+			domain: 'WORKGROUP',
+			username: 'morteros',
+			password: 'C00p3m0rt3r0s#'
 		});
-	  });
+
+		smb2Client.readFile(pdf, (err, data) => {
+			if (err) {
+				if (err.code === 'STATUS_OBJECT_NAME_NOT_FOUND') {
+					console.error(`El archivo "${pdf}" no se encontró.`);
+					return reject(new Error('Archivo no encontrado'));
+				} else {
+					console.error('Error al leer el archivo:', err);
+					return reject(err);
+				}
+			}
+			resolve(data);
+		});
+	});
+};
+
+const voucherPDF = async (req, res) => {
+	try {
+	  const { url } = req.body;
   
-	  console.log('Files:', files);
-	  return files;
+	  if (!url || !url.endsWith('.pdf')) {
+		return res.status(400).send('Nombre de archivo inválido');
+	  }
   
+  
+	  const pdfData = await Facturas('FBS_5_99156.pdf');
+
+	  console.log(pdfData);
+  
+	  res.setHeader('Content-Type', 'application/pdf');
+	  res.send(pdfData);
 	} catch (error) {
-	  console.error('Error listing files:', error);
-	  throw error;
+	  console.error('Error al devolver el PDF');
+	  return res.status(404).send('No se pudo obtener el archivo');
 	}
   };
+
+// const Facturas = async (pdf) => {
+// 	try {
+// 	//   const client = new SambaClient({
+// 	// 	address: '//10.8.0.13/pdf',
+// 	// 	username: 'morteros',
+// 	// 	password: 'C00p3m0rt3r0s#',
+// 	//   });
+
+// 	const smb2Client = new SMB2({
+// 		share: '\\\\10.8.0.13\\pdf',
+// 		domain: 'WORKGROUP',
+// 		username: 'morteros',
+// 		password: 'C00p3m0rt3r0s#'
+// 	  });
+
+// 	  pdf = 'FCB_5_100796';
+  
+// 	  const file = smb2Client.readFile(pdf, (err, data) => {
+// 		if (err) {
+// 		  if (err.code === 'STATUS_OBJECT_NAME_NOT_FOUND') {
+// 			return reject(new Error('Archivo no encontrado'));
+// 		  } else {
+// 			return reject(err);
+// 		  }
+// 		} else {
+// 		  require('fs').writeFileSync(`./${pdf}`, data);
+// 		  console.log(`Archivo "${pdf}" descargado exitosamente.`);
+// 		}
+// 	  });
+
+// 	  console.log(file);
+  
+// 	} catch (error) {
+// 	  console.error('Error listing files:', error);
+// 	  throw error;
+// 	}
+//   };
 
 module.exports = {
 	getInvoice,
 	existInvoice,
-	Facturas
+	Facturas,
+	voucherPDF
 }
+ 

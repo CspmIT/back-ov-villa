@@ -14,3 +14,4 @@ const peopleByDocumentNumber = async (req, res) => {
 module.exports = {
 	peopleByDocumentNumber,
 }
+ 

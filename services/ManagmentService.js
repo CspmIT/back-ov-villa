@@ -219,14 +219,6 @@ async function getPaysMethodEnableds(idMethodEnableds = false) {
 	return await db.PaysMethodEnableds.findAll(query)
 }
 
-async function getAditionalInfo(idCustomer = false) {
-	const query = {}
-	if (idCustomer) {
-		query.where = { codigo: idCustomer }
-	}
-	return await db.AditionalInfoCustomers.findOne(query)
-}
-
 module.exports = {
 	getCommentaries,
 	saveCommentary,
@@ -247,5 +239,4 @@ module.exports = {
 	getTechniciansClaim,
 	savePaysMethodEnableds,
 	getPaysMethodEnableds,
-	getAditionalInfo
 }

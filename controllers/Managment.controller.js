@@ -175,7 +175,7 @@ async function addTechnicianClaim(req, res) {
 	} catch (error) {
 		res.status(400).json(error.message)
 	}
-}
+} 
 
 async function addMethodEnableds(req, res) {
 	try {

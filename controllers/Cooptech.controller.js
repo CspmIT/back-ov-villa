@@ -74,7 +74,7 @@ const OVCliente = async (req, res) => {
 module.exports = {
 	relationUserCooptech,
 	loginCooptech,
-	tokenCooptech,
-	OVCliente,
+	tokenCooptech,  
+	OVCliente, 
 	Methods
 }

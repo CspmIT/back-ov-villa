@@ -6,7 +6,7 @@
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
         "start": "nodemon index.js",
-        "dev": "eslint --config eslint.config.js && node --env-file .env --watch index.js",
+        "dev": "eslint --config eslint.config.js && set NODE_OPTIONS=--openssl-legacy-provider && node --env-file .env --watch index.js",
         "lint": "eslint ."
     },
     "author": "",
@@ -25,11 +25,13 @@
         "pluspagos-aes-encryption": "^1.0.0",
         "samba-client": "^7.2.0",
         "sequelize": "^6.37.3",
-        "tedious": "^18.2.0"
+        "smb2": "^0.2.11",
+        "tedious": "^18.2.0",
+        "zod": "^3.25.63"
     },
     "devDependencies": {
         "@eslint/js": "^9.2.0",
-        "eslint": "^8.57.0",
+        "eslint": "^8.57.1",
         "eslint-config-standard": "^17.1.0",
         "eslint-plugin-import": "^2.29.1",
         "eslint-plugin-n": "^16.6.2",

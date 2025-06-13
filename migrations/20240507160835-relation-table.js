@@ -50,14 +50,9 @@ module.exports = {
 		})
 		// Agrega las claves foráneas a la tabla 'Address'
 		await queryInterface.addColumn('Addresses', 'id_street', {
-			type: Sequelize.INTEGER,
-			references: {
-				model: 'Streets', // nombre de la tabla relacionada
-				key: 'id',
-			},
-			onUpdate: 'CASCADE',
-			onDelete: 'SET NULL',
-		})
+			type: Sequelize.STRING,
+			allowNull: false 
+		  });
 		await queryInterface.addColumn('Addresses', 'id_city', {
 			type: Sequelize.INTEGER,
 			references: {

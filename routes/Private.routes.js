@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const { getNameCustomer, searchByCuit, searchByDNI, addUserPersonMember, removeUserPersonMember, changePrimaryAccountUserProcoop, getAllStreet } = require('../controllers/Procoop.controller')
-const { dataUser, upgradeUser, updateUser, searchUserxDni, getAllAccount, searchUserxNumCustomer, dataUserProfile, updateProfile, updatePhotoProfile, usersRegistered } = require('../controllers/User.controller')
+const { dataUser, addCustomerUser, updateUser, searchUserxDni, getAllAccount, searchUserxNumCustomer, dataUserProfile, updateProfile, updatePhotoProfile, usersRegistered } = require('../controllers/User.controller')
 const { verifyToken } = require('../middleware/Auth.middleware')
 const { logout } = require('../controllers/Auth.controller')
 const { getListState, getListCity, getListStreet, newStreet, getAddress, newStreetAPi, newStreetProcoop } = require('../controllers/Location.controller')
@@ -10,7 +10,9 @@ const { addCommentary, activePopups } = require('../controllers/Managment.contro
 // const { newRequestService, getRequestsByUser } = require('../controllers/RequestService.controller')
 const { peopleByDocumentNumber } = require('../controllers/Person.controller')
 const { payLink, paymentMethods, voucherCustomer } = require('../controllers/Payment.controller')
+const { voucherPDF } = require('../controllers/Invoice.controller')
 
+ 
 
 router.get('/test', (req, res) => {
 	res.json({ message: 'Test route' })
@@ -30,7 +32,7 @@ router.get('/activePopups', verifyToken, activePopups)
 
 //funciones generales del usuario
 router.post('/getCustomer', verifyToken, getNameCustomer)
-router.patch('/upgradeLevelUser', verifyToken, upgradeUser)
+router.patch('/upgradeLevelUser', verifyToken, addCustomerUser)
 router.patch('/updateProfile', verifyToken, updateProfile)
 router.patch('/updatePhotoProfile', verifyToken, updatePhotoProfile)
 router.patch('/updateUser', verifyToken, updateUser)
@@ -71,5 +73,6 @@ router.post('/getUsersRegistered', verifyToken, usersRegistered)
 router.get('/payMethods', verifyToken, paymentMethods)
 router.post('/payLink', verifyToken, payLink)
 router.get('/getBillsCustomer', verifyToken, voucherCustomer)
+router.post('/get_pdf', verifyToken, voucherPDF);
 
 module.exports = router

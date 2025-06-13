@@ -43,7 +43,6 @@ module.exports = (sequelize, DataTypes) => {
 			type_person: DataTypes.INTEGER,
 			status: DataTypes.INTEGER,
 			token_app: DataTypes.STRING,
-			address: DataTypes.STRING,
 		},
 		{
 			sequelize,

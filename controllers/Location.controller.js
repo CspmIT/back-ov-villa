@@ -52,3 +52,4 @@ async function getAddress(req, res) {
 	}
 }
 module.exports = { getListState, getListCity, getListStreet, newStreetProcoop, newStreetAPi, getAddress }
+ 

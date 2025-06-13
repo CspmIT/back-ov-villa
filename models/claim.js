@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
     service: DataTypes.INTEGER,
     status: DataTypes.BOOLEAN,
     user_id: DataTypes.INTEGER,
-    user_name: DataTypes.STRING,
+    customer: DataTypes.STRING,
     observations: DataTypes.STRING,
     signName: DataTypes.STRING,
     signLastName: DataTypes.STRING,
@@ -20,7 +20,8 @@ module.exports = (sequelize, DataTypes) => {
     address: DataTypes.STRING,
   }, {
     sequelize,
-    modelName: 'Claim'
+    modelName: 'Claim',
+    tableName: 'Claim'
   });
 
   return Claim;

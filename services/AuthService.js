@@ -6,8 +6,8 @@ const { Sequelize } = require('sequelize')
 const { sendEmail } = require('./EmailServices')
 const { getLevel } = require('./UserService')
 const { getDataProcoopxId } = require('./ProcoopService')
-const { getAditionalInfo } = require('./ManagmentService')
-
+ 
+      
 const secret = process.env.SECRET
 
 async function newQuery() {
@@ -104,11 +104,7 @@ const login = async (email, password, remember) => {
 		if (accountPrimary[0]) {
 			const number_customer = await getDataProcoopxId(accountPrimary[0].id_person)
 			user.number_customer = number_customer.number_customer
-			if(number_customer.number_customer){
-				const name_customer = await getAditionalInfo(number_customer.number_customer)
-				console.log(name_customer);
-				user.name_customer = name_customer?.nombre
-			}
+ 
 		}
 		console.log(user);
 		return signToken(user, remember)

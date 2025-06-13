@@ -18,7 +18,6 @@ module.exports = (sequelize, DataTypes) => {
 	Person.init(
 		{
 			email: DataTypes.STRING,
-			number_customer: DataTypes.INTEGER,
 			type_person: DataTypes.INTEGER,
 			situation_tax: DataTypes.INTEGER,
 			fixed_phone: DataTypes.STRING,
