@@ -16,6 +16,9 @@ module.exports = {
         host: '10.8.0.13',
         port: 3306,
         dialect: 'mysql',
+        dialectOptions: {
+            ssl: false, 
+        },
     },
     cooptech: {
         database: 'cooptech',
