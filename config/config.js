@@ -16,8 +16,9 @@ module.exports = {
         host: '10.8.0.13',
         port: 3306,
         dialect: 'mysql',
+        dialectModule: require('mysql2'),
         dialectOptions: {
-            ssl: false, 
+            ssl: false,
         },
     },
     cooptech: {
