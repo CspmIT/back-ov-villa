@@ -25,10 +25,9 @@ SequelizeVilla = new Sequelize(
         host: configDb.bd_villa.host,
         port: configDb.bd_villa.port,
         dialect: configDb.bd_villa.dialect,
+        dialectModule: require('mysql2'),
         dialectOptions: {
-            options: {
-                encrypt: false,
-            },
+            ssl: false,
         },
     }
 )
