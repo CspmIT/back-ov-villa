@@ -92,8 +92,8 @@ const paymentPlusPago = async (req, res) => {
 
 		const secret = "CoopdeobrasyservpublicosdeVillaTrinidad_c2f46c88-8f57-4656-814e-593a2b207259"
 		const comercio = "f04856d5-9e70-4d07-ab60-0eb1e6719b91"
-		const success = "http://localhost:8000/pagoexitoso"
-		const failure = "http://localhost:8000/pagofallido"
+		const success = "https://cspvilla.cooptech.com.ar/pagoexitoso"
+		const failure = "https://cspvilla.cooptech.com.ar/pagofallido"
 		const sucursal = ""
 
 		const monto = parseInt(total) * 100
