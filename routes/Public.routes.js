@@ -62,7 +62,7 @@ router.post('/addTechnicianClaim', addTechnicianClaim)
 router.get('/getTechnicianClaim', TechnicianClaim)
 router.post('/addMethodEnableds', addMethodEnableds)
 router.get('/getmethodEnableds', methodEnableds)
-router.get('/estadoPago', paymentStatus)
+router.post('/estadoPago', paymentStatus)
 
 
 //datos cooptech 
