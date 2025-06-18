@@ -117,11 +117,8 @@ const voucherPDF = async (req, res) => {
 		return res.status(400).send('Nombre de archivo inválido');
 	  }
   
-  
-	  const pdfData = await Facturas('FBS_5_99156.pdf');
+	  const pdfData = await Facturas(url);
 
-	  console.log(pdfData);
-  
 	  res.setHeader('Content-Type', 'application/pdf');
 	  res.send(pdfData);
 	} catch (error) {
