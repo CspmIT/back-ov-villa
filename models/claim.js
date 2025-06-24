@@ -18,6 +18,7 @@ module.exports = (sequelize, DataTypes) => {
     signPhone: DataTypes.STRING,
     signImage: DataTypes.STRING,
     address: DataTypes.STRING,
+    name_customer: DataTypes.STRING,
   }, {
     sequelize,
     modelName: 'Claim',
