@@ -88,9 +88,9 @@ const getProfileUser = async (id) => {
 										{
 											association: 'city',
 										},
-										{
-											association: 'street',
-										},
+										// {
+										// 	association: 'street',
+										// },
 										{
 											association: 'state',
 										},

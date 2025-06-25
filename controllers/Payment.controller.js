@@ -143,7 +143,7 @@ const paymentStatus = async (req, res) => {
 		await Promise.all(
 			pays.map(pay => {
 				const dataVilla = {
-				CompCancelado: pay.reference,
+				CompCancelado: pay.reference.toUpperCase(),
 				FechaCobro: formattedDate,
 				Procesado: 0,
 				CodBanco: 1
