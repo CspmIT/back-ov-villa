@@ -689,7 +689,6 @@ const getUserxNumCustomer = async (num) => {
 		let responseData
 		if (!user) {
 			user = await Cliente_x_code(num)
-			console.log(Cliente_x_code);
 			fullName = user[0].nombre;
 			const name = fullName.split(' ');
 			responseData = { name: name.slice(1).join(' '), last_name: name[0] }

@@ -59,7 +59,7 @@ router.post('/getAddress', verifyToken, getAddress)
 
 // Funcion para recuperar toda la informacion del usuario por dni
 router.get('/searchUserxDni', verifyToken, searchUserxDni)
-router.get('/searchUserxNumCustomer', verifyToken, searchUserxNumCustomer)
+router.get('/searchUserxNumCustomer', verifyToken, getNameCustomer)
 
 // FUNCIONES PARA SOLICITUD DE SERVICIOS
 // router.post('/createRequestService', verifyToken, newRequestService)
