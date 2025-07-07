@@ -8,14 +8,14 @@ async function getInvoice(req, res) {
 		const result = [];
 
 		for (const item of socios) {
-			const debts = all ? await debtsCustomerVilla(item.num) : await debtsCustomerVillaAll(item.num);
+			const debts = !all ? await debtsCustomerVilla(item.num) : await debtsCustomerVillaAll(item.num);
 			if (!debts) {
 				continue;
 			}
 			let invoices = { codigo: item.num, list: [] };
 
 			for (const debt of debts) {
-				let precio = parseFloat(all ? debt.importe : debt.total) < 0 ? Math.abs(all ? debt.importe : debt.total) : all ? debt.importe : debt.total;
+				let precio = parseFloat(!all ? debt.importe : debt.total) < 0 ? Math.abs(!all ? debt.importe : debt.total) : !all ? debt.importe : debt.total;
 
 				const comp = `${debt.tipoComprobante}${formatearNumero(debt.puntoVenta, 4)}${formatearNumero(debt.numero, 8)}`;
 				const pdf = `${debt.tipoComprobante}_${debt.puntoVenta}_${debt.numero}.pdf`;
@@ -44,7 +44,7 @@ async function getInvoice(req, res) {
 					typeComp: debt.tipoComprobante,
 					puntoVenta: debt.puntoVenta,
 					nrovoucher: debt.numero,
-					vto: all ? debt.fechaVencimiento : debt.fecha,
+					vto: !all ? debt.fechaVencimiento : debt.fecha,
 					amount: parseFloat(precio).toFixed(2),
 					url: pdf,
 					status: status,
