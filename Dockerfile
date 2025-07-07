@@ -12,6 +12,7 @@ ENV DB_HOST=$DB_HOST
 ENV DB_PASS=$DB_PASS
 ENV DB_PORT=$DB_PORT
 ENV SECRET=$SECRET
+ENV NODE_OPTIONS=--openssl-legacy-provider
 
 COPY package*.json ./
 RUN npm install

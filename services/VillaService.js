@@ -38,13 +38,33 @@ const Service_x_code = async (numberCustomer) => {
 	}
 }
 
-const debtsCustomerVilla = async (number, all) => {
+const debtsCustomerVilla = async (number) => {
 	try {
 		const query = `SELECT v.*, c.nombre, c.domicilio FROM vencimientoscobrar as v 
 					   LEFT JOIN clientes as c on c.codigo = v.cliente  
-                       WHERE v.cliente = :number ${all ? '' : 'AND v.importe > 0'} AND c.inactivo = 0 
+                       WHERE v.cliente = :number AND v.importe > 0 AND c.inactivo = 0 
 					   AND (v.puntoVenta = 5 OR v.puntoVenta = 9 OR v.puntoVenta = 7) 
                        ORDER BY v.fechaComprobante DESC`;
+
+		const result = await SequelizeVilla.query(query, {
+			replacements: { number: number },
+			type: SequelizeVilla.QueryTypes.SELECT,
+		});
+
+		return result;
+	} catch (error) {
+		throw error;
+	}
+};
+
+const debtsCustomerVillaAll = async (number) => {
+	try {
+		const query = `SELECT v.*, c.nombre, c.domicilio from ventas as v
+					   LEFT JOIN clientes as c on c.codigo = v.cliente  
+                       WHERE v.cliente = :number AND c.inactivo = 0 
+					   AND v.anulada = 0 
+					   AND (v.puntoVenta = 5 OR v.puntoVenta = 9 OR v.puntoVenta = 7) 
+                       ORDER BY v.fecha DESC`;
 
 		const result = await SequelizeVilla.query(query, {
 			replacements: { number: number },
@@ -342,6 +362,7 @@ const getOrCreateMember = async (body, user) => {
 module.exports = {
 	Cliente_x_code,
 	debtsCustomerVilla,
+	debtsCustomerVillaAll,
 	debtsCustomerOV,
 	getOrCreateMember,
 	Service_x_code,
