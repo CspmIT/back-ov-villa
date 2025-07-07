@@ -159,16 +159,28 @@ const paymentStatus = async (req, res) => {
 	}
   };
 
-  
-const voucherCustomer = async (req, res) => {
-	try {
-		const { customer } = req.query
-		const data = await getVouchersCustomer(customer)
-		return res.status(200).json(data)
-	} catch (e) {
-		console.log(e)
+	async function voucherCustomer(req, res) {
+		try {
+			const { socios } =  req.body;
+			const result = [];
+
+			for (const item of socios) {
+				const data = await getVouchersCustomer(item.num)
+				if (!data) {
+					continue;
+				}
+				let pays = { codigo: item.num, list: data ?? [] };
+
+				if (pays.list.length > 0) {
+					result.push(pays);
+				}
+			}
+		
+			return res.status(200).json(result);
+		} catch (error) {
+			return res.status(400).json({ message: error.message });
+		}
 	}
-}
 
 
 module.exports = {

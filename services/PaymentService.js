@@ -80,12 +80,12 @@ const getVouchersCustomer = async (customer) => {
 	try {
 		try {
 			const paymentDetails = await db.PaysDetails.findAll({
+				where: { customer : customer },
 				include: {
 					model: db.Pays,
 					as: 'pays',
 					required: true,
 					where: {
-						id_user: customer,
 						status: 1,
 					}
 				}
