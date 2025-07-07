@@ -72,7 +72,7 @@ router.post('/addCommentary', verifyToken, addCommentary)
 router.post('/getUsersRegistered', verifyToken, usersRegistered)
 router.get('/payMethods', verifyToken, paymentMethods)
 router.post('/payLink', verifyToken, payLink)
-router.get('/getBillsCustomer', verifyToken, voucherCustomer)
+router.post('/getAllPayments', verifyToken, voucherCustomer)
 router.post('/get_pdf', verifyToken, voucherPDF);
 
 module.exports = router
