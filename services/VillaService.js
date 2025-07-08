@@ -168,7 +168,7 @@ const getOrCreateMember = async (body, user) => {
 			err.statusCode = 422;
 			throw err;
 		}
-
+  
 		if (!Personvilla) {
 
 		  const dataVillaMember = {
