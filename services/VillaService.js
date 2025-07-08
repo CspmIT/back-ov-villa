@@ -161,9 +161,14 @@ const getOrCreateMember = async (body, user) => {
 		const dataVilla = datoUser[0];
   
 		const dni = dataVilla?.numeroDocumento;
-		const dniGuardar = dni.replace(/\./g, '');
-  
+		const dniGuardar = dni.replace(/[^\d]/g, '');
+
+		if (!dniGuardar) {
+			throw new Error('No se pudo obtener el número de documento del socio. Por favor, comuníquese con el equipo de desarrollo.');
+		}
+
 		if (!Personvilla) {
+
 		  const dataVillaMember = {
 			email: dataVilla.email,
 			number_customer: num_customer,
