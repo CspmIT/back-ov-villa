@@ -95,7 +95,10 @@ async function addUserPersonMember(req, res) {
 		const Person = await getOrCreateMember(req.body, req.user)
 		return res.status(200).json(Person)
 	} catch (error) {
-		return res.status(404).json({ message: error.message })
+		const statusCode = error.statusCode || 400;
+		return res.status(statusCode).json({
+			message: error.message || 'Ocurrió un error inesperado. Contacte al equipo de desarrollo.',
+		});
 	}
 }
 async function removeUserPersonMember(req, res) {

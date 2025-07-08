@@ -164,7 +164,9 @@ const getOrCreateMember = async (body, user) => {
 		const dniGuardar = dni.replace(/[^\d]/g, '');
 
 		if (!dniGuardar) {
-			throw new Error('No se pudo obtener el número de documento del socio. Por favor, comuníquese con el equipo de desarrollo.');
+			const err = new Error('No se pudo obtener el número de documento del socio. Por favor, comuníquese con el equipo de desarrollo.');
+			err.statusCode = 422;
+			throw err;
 		}
 
 		if (!Personvilla) {
