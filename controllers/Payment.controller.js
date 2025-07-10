@@ -96,7 +96,7 @@ const paymentPlusPago = async (req, res) => {
 		const failure = "https://cspvilla.cooptech.com.ar/pagofallido"
 		const sucursal = ""
 
-		const monto = parseInt(total) * 100
+		const monto = parseFloat(total) * 100;
 		let montoTotal = monto
 		const information = ""
 		const data = {
