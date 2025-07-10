@@ -119,9 +119,10 @@ const paymentPlusPago = async (req, res) => {
 
 
 //
-const paymentStatus = async (req, res) => {
+  const paymentStatus = async (req, res) => {
 	try {
 	  const data = req.body;
+  
 	  const dataDb = {
 		id: data.TransaccionComercioId,
 		status: data.Estado === "REALIZADA" && data.Tipo === "PAGO" ? 1 : 2,
@@ -130,34 +131,36 @@ const paymentStatus = async (req, res) => {
 	  };
   
 	  const payment = await updatePay(dataDb);
-
+  
 	  if (payment == null) {
 		res.status(404).json({ message: "Pago no encontrado para el transaction_id especificado." });
 	  } else {
-
-	const pays = await getPaysDetails(data.TransaccionComercioId) || [];
-
-		const today = new Date();
-		const formattedDate = today.toISOString().split('T')[0];
-
-		await Promise.all(
+		// Solo si el pago fue REALIZADO
+		if (dataDb.status === 1) {
+		  const pays = await getPaysDetails(data.TransaccionComercioId) || [];
+		  const today = new Date();
+		  const formattedDate = today.toISOString().split('T')[0];
+  
+		  await Promise.all(
 			pays.map(pay => {
-				const dataVilla = {
+			  const dataVilla = {
 				CompCancelado: pay.reference.toUpperCase(),
 				FechaCobro: formattedDate,
 				Procesado: 0,
 				CodBanco: 1
-				};
-				return paysCancel(dataVilla);
+			  };
+			  return paysCancel(dataVilla);
 			})
-		);
+		  );
+		}
+  
 		res.status(200).json({ message: "Pago procesado", payment });
 	  }
-
 	} catch (e) {
 	  res.status(500).json({ message: "Error en el servidor: " + e.message });
 	}
   };
+  
 
 	async function voucherCustomer(req, res) {
 		try {
