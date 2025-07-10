@@ -236,7 +236,7 @@ const getOrCreateMember = async (body, user) => {
 		  id_person: Personvilla.id,
 		  id_user: user.id,
 		  level: 2,
-		  primary_account: false,
+		  primary_account: !Personvilla ? true : false,
 		  status: true,
 		  customer_last_name: dataVilla.nombre,
 		  customer_number: num_customer,
