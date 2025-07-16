@@ -584,14 +584,22 @@ const updateLvl2 = async (user, dataUpdate) => {
 		}
 	})
 }
-const getLevel = async (id) => {
+
+const getLevel = async (id, status = false) => {
 	try {
-		const data = await db.User_People.findAll({ where: { id_user: id } })
+		const where = { id_user: id }
+
+		if (status !== false) {
+			where.status = status
+		}
+
+		const data = await db.User_People.findAll({ where })
 		return data
 	} catch (error) {
 		throw error
 	}
 }
+
 const saveUser = async (userData) => {
 	try {
 		const { id, ...data } = userData
