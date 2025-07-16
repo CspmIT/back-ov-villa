@@ -89,16 +89,8 @@ async function dataUser(req, res) {
 		if (!id) throw new Error('Se debe pasar el id del usuario.')
 		const user = await getUser(id)
 		if (!user) throw new Error('El usuario no existe o ya ha sido validado.')
-		const dataProcoop = await getLevel(user.id)
-		let level = 1
-		if (dataProcoop) {
-			level = dataProcoop.filter((item) => {
-				if (item.primary_account === true) {
-					return item.level
-				}
-			})
-		}
-		user.level = level
+		const dataProcoop = await getLevel(user.id, 1)
+		user.level = Array.isArray(dataProcoop) && dataProcoop.length > 0 ? 2 : 1;
 		res.status(200).json(user)
 	} catch (error) {
 		if (error.errors) {
@@ -108,6 +100,7 @@ async function dataUser(req, res) {
 		}
 	}
 }
+
 async function dataUserProfile(req, res) {
 	try {
 		const { id } = req.user
