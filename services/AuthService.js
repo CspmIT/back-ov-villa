@@ -89,24 +89,12 @@ const login = async (email, password, remember) => {
 		const isMatch = await bcrypt.compare(password, hash)
 		if (!isMatch) {
 			throw new Error('El usuario o la contraseña son incorrectas')
+		
 		}
-		const dataPeople = await getLevel(user.id)
-		let accountPrimary
-		if (dataPeople) {
-			accountPrimary = dataPeople.filter((item) => {
-				let data = item.get()
-				if (data.primary_account === true) {
-					return item
-				}
-			})
-		}
-		user.level = accountPrimary[0]?.level || 1
-		if (accountPrimary[0]) {
-			const number_customer = await getDataProcoopxId(accountPrimary[0].id_person)
-			user.number_customer = number_customer.number_customer
- 
-		}
-		console.log(user);
+
+		const dataPeople = await getLevel(user.id, 1)
+		user.level = Array.isArray(dataPeople) && dataPeople.length > 0 ? 2 : 1;
+
 		return signToken(user, remember)
 	} catch (error) {
 		throw error
