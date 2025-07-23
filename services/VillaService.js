@@ -243,7 +243,7 @@ const getOrCreateMember = async (body, user) => {
 		};
   
 		const [relationVilla, create] = await db.User_People.findOrCreate({
-		  where: { id_user: user.id, id_person: Personvilla.id },
+		  where: { id_user: user.id, id_person: Personvilla.id, customer_number: num_customer },
 		  defaults: { ...relationPersonvilla },
 		  transaction: t,
 		});
