@@ -2,26 +2,35 @@ const express = require('express')
 const router = express.Router()
 const { migrationUser, tokenVerify, usersRegistered } = require('../controllers/User.controller')
 // const { migrator1Up } = require('../controllers/migrations.controller')
-const { login, testConect, register, verifyRegister, password_recover } = require('../controllers/Auth.controller')
+const {     
+    login,
+    testConect,
+    register,
+    verifyRecoverToken,
+    verifyRegister,
+    password_recover,
+    changePassword
+} = require('../controllers/Auth.controller')
 const { customerServices, customerConsumption } = require('../controllers/Services.controller')
 const { getInvoice, existInvoice } = require('../controllers/Invoice.controller')
 const { searchByDNI, searchByCuit } = require('../controllers/Procoop.controller')
 const { Commentaries, Popups, addPopup, addInformation, Informations, addImageInformation, ImageInformations, Claims, addClaim, 
     Users, addMaterialsClaim, MaterialsClaim, toolsClaim, addTechnicianClaim, TechnicianClaim, methodEnableds, addMethodEnableds
 } = require('../controllers/Managment.controller')
-const { relationUserCooptech, loginCooptech, tokenCooptech, OVCliente, Methods } = require('../controllers/Cooptech.controller')
+const { relationUserCooptech, OVCliente, Methods } = require('../controllers/Cooptech.controller')
 const { testConnectionVilla } = require('../database/MySQL.database')
 const { paymentStatus } = require('../controllers/Payment.controller')
 
 // RUTAS PARA AUTH
 
-router.post('/generateTokenCooptech', tokenCooptech)
-router.post('/loginCooptech', loginCooptech)
 router.post('/login', login)
 router.post('/register', register)
+router.post('/changePassword', changePassword)
 router.post('/validationUser', verifyRegister)
+router.post('/validationToken', verifyRecoverToken)
 router.post('/password_recover', password_recover)
 router.post('/existToken', tokenVerify)
+
 
 // RUTAS PARA COOPTECH
 router.post('/relationUserCooptech', relationUserCooptech)
