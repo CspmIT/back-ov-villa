@@ -87,11 +87,8 @@ const password_recover = async (req, res) => {
 		// Genero url pra click en email para redireccionar y que cambie la password
 		const fullUrl = `${req.protocol}://${req.get('host')}/ChangePassword/${tokenTemp}/${user.id}`
 		// Enviar correo electronico con el link para resetear la contraseña
-		await sendRecoverPass(
-            user.dataValues.name_register,
-            user.email,
-            fullUrl
-        )		// Guardar en BD el token temporal y su fecha de expiracion
+		await sendRecoverPass(user.name, user.email, fullUrl)
+		// Guardar en BD el token temporal y su fecha de expiracion
 		await setTokenTemporal(user.id, tokenTemp)
 		res.status(200).json({ message: `Se ha enviado un mensaje a tu cuenta de correo electrónico`, url: fullUrl })
 	} catch (error) {
