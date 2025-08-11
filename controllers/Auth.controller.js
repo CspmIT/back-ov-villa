@@ -89,7 +89,7 @@ const password_recover = async (req, res) => {
 		// Enviar correo electronico con el link para resetear la contraseña
 		await sendRecoverPass(
             user.dataValues.name_register,
-            user.email,
+            user.email, 
             fullUrl
         )		// Guardar en BD el token temporal y su fecha de expiracion
 		await setTokenTemporal(user.id, tokenTemp)
