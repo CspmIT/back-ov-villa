@@ -99,5 +99,36 @@ const password_recover = async (req, res) => {
 	}
 }
 
-module.exports = { login, testConect, register, newQuery, logout, verifyRegister, password_recover }
+// FUNCION PARA RECUPERAR EL USUARIO Y VERIFICAR EL TOKEN TEMPORAL DEL RECUPERAR CONTRASEÑA
+const verifyRecoverToken = async (req, res) => {
+    try {
+        const { token_temp, id_user } = req.body
+        if (!token_temp || !id_user)
+            throw new Error('No se enviaron los parametros necesarios')
+        const isValidToken = await AuthService.verifyRecoverTokenService(
+            token_temp,
+            id_user
+        )
+        if (isValidToken.error)
+            throw new Error('El enlace es invalido o ya fue utilizado')
+        res.status(200).json({ message: 'El enlace es valido' })
+    } catch (error) {
+        res.status(400).json(error.message)
+    }
+}
+
+// FUNCION PARA ACTUALIZAR LA CONTRASEÑA DEL USUARIO EN EL RECUPERAR CONTRASEÑA
+const changePassword = async (req, res) => {
+    try {
+        const { id_user, password, token } = req.body
+        if (!id_user || !password)
+            throw new Error('No se enviaron los parametros necesarios')
+        await AuthService.changePasswordService(id_user, password, token)
+        res.status(200).json({ message: 'Se actualizo la contraseña' })
+    } catch (error) {
+        res.status(400).json(error.message)
+    }
+}
+
+module.exports = { login, testConect, register, newQuery, logout, verifyRegister, password_recover, verifyRecoverToken, changePassword }
  

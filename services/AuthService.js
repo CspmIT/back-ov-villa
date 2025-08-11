@@ -155,6 +155,46 @@ const registerUser = async (data, url) => {
 	}
 }
 
+
+const logout = async (req, res) => {
+    try {
+        const id = req.cookies.token.sub
+        const user = await db_coopm_v1.UserDesarrollo.findOne({
+            where: { id: id },
+        })
+    } catch (error) {
+        res.status(400).json({ error: error.message })
+    }
+}
+
+const verifyRecoverTokenService = async (token, id_user) => {
+    try {
+        const user = await db.User.findOne({
+            where: { token_temp: token, id: id_user },
+        })
+        if (!user) throw new Error('El token no existe')
+        return user
+    } catch (error) {
+        throw error
+    }
+}
+
+const changePasswordService = async (id, password, token) => {
+    try {
+        const user = await db.User.findOne({
+            where: { id: id, token_temp: token },
+        })
+        const pass = await bcrypt.hash(password, 10)
+        user.password = pass
+        user.token_temp = null
+        await user.save()
+        return user
+    } catch (error) {
+        throw error
+    }
+}
+
+
 // const logout = async (req, res) => {
 // 	try {
 // 		const id = req.cookies.token.sub
@@ -164,4 +204,4 @@ const registerUser = async (data, url) => {
 // 	}
 // }
 
-module.exports = { testConection, login, newQuery, registerUser, authCooptech, generateTokenCooptech }
+module.exports = { testConection, login, newQuery, registerUser, authCooptech, generateTokenCooptech, logout, verifyRecoverTokenService , changePasswordService }
