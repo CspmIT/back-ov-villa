@@ -42,7 +42,7 @@ async function sendRecoverPass(name, email, url) {
 			{
 				headers: {
 					'Content-Type': 'application/json',
-					Authorization: 'e8ba65dc4d01ba6c',
+					Authorization: 'e8ba65dc4d01ba6c', 
 				},
 			}
 		)

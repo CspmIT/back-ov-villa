@@ -52,7 +52,7 @@ function Register(data) {
                     </td>
                   </tr>
         
-                  <!-- Footer -->
+                  <!-- Footer --> 
                   <tr>
                     <td style="background:rgba(255,255,255,0.05);padding:20px;text-align:center;font-size:12px;color:#bbbbbb;">
                       © ${new Date().getFullYear()} CoopTech · Oficina Virtual · CoopMorteros 
