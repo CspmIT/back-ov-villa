@@ -11,6 +11,7 @@ const { addCommentary, activePopups } = require('../controllers/Managment.contro
 const { peopleByDocumentNumber } = require('../controllers/Person.controller')
 const { payLink, paymentMethods, voucherCustomer } = require('../controllers/Payment.controller')
 const { voucherPDF } = require('../controllers/Invoice.controller')
+const { getCredentials } = require('../controllers/Minio.controller')
 
  
 
@@ -74,5 +75,6 @@ router.get('/payMethods', verifyToken, paymentMethods)
 router.post('/payLink', verifyToken, payLink)
 router.post('/getAllPayments', verifyToken, voucherCustomer)
 router.post('/get_pdf', verifyToken, voucherPDF);
+router.get('/getMinio', verifyToken, getCredentials)
 
 module.exports = router
