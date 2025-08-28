@@ -1,18 +1,12 @@
 function Register(data) {
-    try {
-        const hmtl = `<!doctype html>
-        <html lang="es">
-        <head>
-          <meta charset="utf-8">
-          <meta name="viewport" content="width=device-width">
-          <title>Recupero de contraseña</title>
+	try {
+		const hmtl = `<html>
           <style>
             @media only screen and (max-width:600px){
               .container { width: 100% !important; padding: 20px !important; }
               .content { font-size: 16px !important; }
             }
           </style>
-        </head>
         <body style="margin:0;padding:0;font-family:Arial,Helvetica,sans-serif;color:#ffffff;">
           <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
             <tr>
@@ -67,26 +61,21 @@ function Register(data) {
           </table>
         </body>
         </html>`
-        return hmtl
-    } catch (error) {
-        throw new Error(error)
-    }
+		return hmtl
+	} catch (error) {
+		throw new Error(error)
+	}
 }
 function PasswordRecovery(data) {
-    try {
-      const html = `<!doctype html>
-  <html lang="es">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width">
-    <title>Recupero de contraseña</title>
+	try {
+		const html = `
+  <html>
     <style>
       @media only screen and (max-width:600px){
         .container { width: 100% !important; padding: 20px !important; }
         .content { font-size: 16px !important; }
       }
     </style>
-  </head>
   <body style="margin:0;padding:0;font-family:Arial,Helvetica,sans-serif;color:#ffffff;">
     <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
       <tr>
@@ -141,14 +130,14 @@ function PasswordRecovery(data) {
       </tr>
     </table>
   </body>
-  </html>`;
-      return html;
-    } catch (error) {
-      throw new Error(error);
-    }
-  }
-  
+  </html>`
+		return html
+	} catch (error) {
+		throw new Error(error)
+	}
+}
+
 module.exports = {
-    Register,
-    PasswordRecovery
+	Register,
+	PasswordRecovery,
 }
