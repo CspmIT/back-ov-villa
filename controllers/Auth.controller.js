@@ -88,7 +88,7 @@ const password_recover = async (req, res) => {
 		const fullUrl = `${req.protocol}://${req.get('host')}/ChangePassword/${tokenTemp}/${user.id}`
 		// Enviar correo electronico con el link para resetear la contraseña
 		const emailRecover = await sendRecoverPass(user.dataValues.name_register,  user.email, fullUrl)
-		await setTokenTemporal(user.id, tokenTemp)
+		await setTokenTemporal(user.id, tokenTemp) 
 	
 		if (emailRecover.success) {
 			res.status(200).json({
