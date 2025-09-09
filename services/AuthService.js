@@ -140,8 +140,8 @@ const registerUser = async (data, url) => {
 	try {
 		const user = await db.User.create(data)
 		const urlAthentificate = `${url}/login/${data.token_temp}/${user.id}`
-		await sendEmail(data, urlAthentificate)
-		return data
+		const emailResponse = await sendEmail(data, urlAthentificate)
+		return { ...data, emailResponse }
 	} catch (error) {
 		if (error instanceof Sequelize.ValidationError) {
 			let listErrors = []
