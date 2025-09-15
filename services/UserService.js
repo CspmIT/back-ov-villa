@@ -248,6 +248,7 @@ const createLegalIfNotExists = async (data, person, user, customerVilla, t ) => 
                 level: data.level,
                 primary_account: true,
                 status: 1,
+				id_person: person.id,
             },
             { transaction: t }
         )
@@ -296,7 +297,7 @@ const levelUp = async (data) => {
                 { transaction: t }
             )
 
-            if (user.type_person === 1) {
+            if (user.type_person == 1) {
                 const { person, physical, userPeople } =
                     await createPhysicalIfNotExists(
                         data,

@@ -152,6 +152,7 @@ async function addCustomerUser(req, res) {
             birthdate,
             id,
             level,
+            typeUser
         } = req.body
 
         const user = {
@@ -161,7 +162,7 @@ async function addCustomerUser(req, res) {
             number_customer: textToNumber(number_customer),
             document_type: textToNumber(document_type),
             document_number: textToNumber(document_number),
-            sex: textToNumber(sex),
+           	sex: sex ? textToNumber(sex) : undefined,
             id_state: textToNumber(id_state),
             id_city: textToNumber(id_city),
             id_street,
@@ -169,15 +170,17 @@ async function addCustomerUser(req, res) {
             phoneCaract: textToNumber(phoneCaract),
             numberPhone: textToNumber(numberPhone),
             birthdate,
+            typeUser: textToNumber(typeUser),
         }
 
         const validCustomer = customerSchema.safeParse(user)
         if (!validCustomer.success) {
-            throw new Error(validCustomer.error)
+            throw new Error(validCustomer.error.issues.map(e => e.message).join(', '))
         }
 
-        const saveCustomer = await levelUp(validCustomer.data)
+        const { typeUser: _, ...customerToSave } = validCustomer.data
 
+        const saveCustomer = await levelUp(customerToSave)
         return res.status(200).json(saveCustomer)
     } catch (error) {
         res.status(400).json(error.message)
