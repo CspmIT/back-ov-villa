@@ -12,7 +12,8 @@ const savePay = async (data, bills) => {
 				customer: bill.number,
 				name_customer: bill.nombre,
 				amount: parseFloat(bill.amount).toFixed(2),
-				reference: comprobante
+				reference: comprobante,
+				cuota: bill.cuota
 			}
 		})
 		await db.PaysDetails.bulkCreate(details, { transaction: t })
@@ -100,11 +101,34 @@ const getVouchersCustomer = async (customer) => {
 	}
 }
 
+const getPaysFromDate = async () => {
+	const startDate = new Date("2025-09-12T00:00:00");
+	const endDate = new Date();
+  
+	return db.Pays.findAll({
+	  where: {
+		status: 1,
+		createdAt: {
+		  [Op.between]: [startDate, endDate],
+		},
+	  },
+	  include: [
+		{
+		  model: db.PaysDetails,
+		  as: "details",
+		  required: true,
+		},
+	  ],
+	  order: [["createdAt", "DESC"]],
+	});
+  };
+
 module.exports = {
 	savePay,
 	enabledMethods,
 	updatePay,
 	getPaysDetails,
 	getPays,
-	getVouchersCustomer
+	getVouchersCustomer,
+	getPaysFromDate
 }
