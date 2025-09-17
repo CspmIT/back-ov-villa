@@ -118,7 +118,7 @@ const paysCancel = async (data) => {
 	try {
 		const query = `
 			INSERT INTO oficinav 
-			(CompCancelado, FechaCobro, Procesado, CodBanco) 
+			(CompCancelado, FechaCobro, Procesado, CodBanco, cuota) 
 			VALUES (:CompCancelado, :FechaCobro, :Procesado, :CodBanco)
 		`;
 		const result = await SequelizeVilla.query(query, {
