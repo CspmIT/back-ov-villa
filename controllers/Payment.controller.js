@@ -1,4 +1,4 @@
-const { enabledMethods, savePay, updatePay, getPaysDetails, getVouchersCustomer} = require('../services/PaymentService')
+const { enabledMethods, savePay, getPaysFromDate, updatePay, getPaysDetails, getVouchersCustomer} = require('../services/PaymentService')
 const { paysCancel} = require('../services/VillaService')
 
 const pkg = require('pluspagos-aes-encryption');
@@ -147,7 +147,8 @@ const paymentPlusPago = async (req, res) => {
 				CompCancelado: pay.reference.toUpperCase(),
 				FechaCobro: formattedDate,
 				Procesado: 0,
-				CodBanco: 1
+				CodBanco: 1,
+				cuota:  pay.cuota
 			  };
 			  return paysCancel(dataVilla);
 			})
@@ -156,6 +157,46 @@ const paymentPlusPago = async (req, res) => {
   
 		res.status(200).json({ message: "Pago procesado", payment });
 	  }
+	} catch (e) {
+	  res.status(500).json({ message: "Error en el servidor: " + e.message });
+	}
+  };
+
+
+  const paymentStatusActual = async (req, res) => {
+	try {
+  
+		const payments = await getPaysFromDate();  
+		if (!payments || payments.length === 0) {
+			return res.status(404).json({ message: "No hay pagos" });
+		}
+
+		const today = new Date();
+		const formattedDate = today.toISOString().split("T")[0];
+
+		await Promise.all(
+			payments.map(async (payment) => {
+			  // recorremos sus detalles
+			  await Promise.all(
+				payment.details.map((payDetail) => {
+				  const dataVilla = {
+					CompCancelado: payDetail.reference.toUpperCase(),
+					FechaCobro: formattedDate,
+					Procesado: 0,
+					CodBanco: 1,
+					cuota: payDetail.cuota,
+				  };
+				  return paysCancel(dataVilla);
+				})
+			  );
+			})
+		  );
+
+		  res.status(200).json({
+			message: "Pagos procesados correctamente",
+			count: payments.length,
+		  });
+
 	} catch (e) {
 	  res.status(500).json({ message: "Error en el servidor: " + e.message });
 	}
@@ -185,11 +226,11 @@ const paymentPlusPago = async (req, res) => {
 		}
 	}
 
-
 module.exports = {
 	paymentMethods,
 	payLink,
 	paymentStatus,
-	voucherCustomer
+	voucherCustomer,
+	paymentStatusActual
 }
   

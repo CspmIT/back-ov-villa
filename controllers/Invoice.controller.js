@@ -15,6 +15,9 @@ async function getInvoice(req, res) {
 			let invoices = { codigo: item.num, list: [] };
 
 			for (const debt of debts) {
+
+				// console.log(debt);
+
 				let precio = parseFloat(!all ? debt.importe : debt.total) < 0 ? Math.abs(!all ? debt.importe : debt.total) : !all ? debt.importe : debt.total;
 
 				const comp = `${debt.tipoComprobante}${formatearNumero(debt.puntoVenta, 4)}${formatearNumero(debt.numero, 8)}`;
@@ -51,7 +54,8 @@ async function getInvoice(req, res) {
 					number: debt.cliente,
 					nombre: debt.nombre,
 					domicilio: debt.domicilio,
-					checkbox:  !all && status == 2 ? false : true
+					checkbox:  !all && status == 2 ? false : true,
+					cuota: debt.cuota
 				};
 
 				invoices.list.push(fact);
@@ -60,6 +64,7 @@ async function getInvoice(req, res) {
 			if (invoices.list.length > 0) {
 				result.push(invoices);
 			}
+
 		}
 	
 		return res.status(200).json(result);

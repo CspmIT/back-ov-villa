@@ -20,6 +20,7 @@ module.exports = (sequelize, DataTypes) => {
     name_customer: DataTypes.STRING,
     amount: DataTypes.DECIMAL,
     reference: DataTypes.STRING,
+    cuota: DataTypes.INTEGER,
   }, {
     sequelize,
     modelName: 'PaysDetails',
