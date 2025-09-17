@@ -119,14 +119,15 @@ const paysCancel = async (data) => {
 		const query = `
 			INSERT INTO oficinav 
 			(CompCancelado, FechaCobro, Procesado, CodBanco, cuota) 
-			VALUES (:CompCancelado, :FechaCobro, :Procesado, :CodBanco)
+			VALUES (:CompCancelado, :FechaCobro, :Procesado, :CodBanco, :cuota)
 		`;
 		const result = await SequelizeVilla.query(query, {
 			replacements: {
 				CompCancelado: data.CompCancelado,
 				FechaCobro: data.FechaCobro,
 				Procesado: data.Procesado,
-				CodBanco: data.CodBanco
+				CodBanco: data.CodBanco,
+				cuota: data.cuota
 			},
 			type: SequelizeVilla.QueryTypes.INSERT, 
 		});
