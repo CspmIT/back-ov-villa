@@ -1,4 +1,5 @@
 const { db } = require('../models')
+const { Op } = require('sequelize')
 
 const savePay = async (data, bills) => {
 	try {
