@@ -92,11 +92,12 @@ const getPaysCancel = async (CompCancelado) => {
 	}
 };
 
-const debtsCustomerOV = async (number) => {
+const debtsCustomerOV = async (number, cuota) => {
 	try {
 		const paymentDetails = await db.PaysDetails.findAll({
 			where: {
 				reference: number,
+				cuota: cuota
 			},
 			include: {
 				model: db.Pays,

@@ -27,7 +27,7 @@ async function getInvoice(req, res) {
 				// if (!all && parseFloat(debt.importe) > 0) {
 				var status = 0
 				// }
-				var isPayed = await debtsCustomerOV(comp)
+				var isPayed = await debtsCustomerOV(comp, debt.cuota)
 				status = isPayed ? 2 : status
 
 				let comprobante = '';
