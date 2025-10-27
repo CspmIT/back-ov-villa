@@ -28,7 +28,7 @@ async function getInvoice(req, res) {
 				var status = 0
 				// }
 
-				if(debts = !all){
+				if(!all){
 					var isPayed = await debtsCustomerOV(comp, debt.cuota)
 					status = isPayed ? 2 : status
 				}else{
