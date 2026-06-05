@@ -1,5 +1,7 @@
 const { enabledMethods, savePay, getPaysFromDate, updatePay, getPaysDetails, getVouchersCustomer} = require('../services/PaymentService')
 const { paysCancel} = require('../services/VillaService')
+const { db } = require('../models')
+const axios = require('axios')
 
 const pkg = require('pluspagos-aes-encryption');
 
@@ -202,6 +204,109 @@ const paymentPlusPago = async (req, res) => {
 	}
   };
   
+	// Obtiene el token Bearer de PlusPagos (equivalente a session() del sistema Macro)
+	const getToken = async () => {
+		const payload = {
+			guid: "f04856d5-9e70-4d07-ab60-0eb1e6719b91",
+			frase: "jTh0q96eNc8d3H7y0n/Mpze9Y8QJ8hURgpAG8ec6CGA=",
+		};
+		const { data } = await axios.post(
+			"https://botonpp.asjservicios.com.ar:8082/v1/sesion",
+			payload,
+			{ headers: { "Content-Type": "application/json" } }
+		);
+		return data.data; 
+	};
+
+	const reconcileTransactions = async (req, res) => {
+		try {
+
+			const token = await getToken();
+
+			const pad = (n) => String(n).padStart(2, "0");
+			const fmt = (d) => `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
+			const ayer = new Date();
+			ayer.setDate(ayer.getDate() - 1);
+			const anteayer = new Date();
+			anteayer.setDate(anteayer.getDate() - 2);
+
+			const { data: result } = await axios.get(
+				"https://botonpp.asjservicios.com.ar:8082/v1/transactions",
+				{
+					params: {
+						FechaDesde: fmt(anteayer),
+						FechaHasta: fmt(ayer),
+						EstadoTransaccion: 3,
+					},
+					headers: { Authorization: `Bearer ${token}` },
+				}
+			);
+
+			const transacciones = result?.data?.transacciones || [];
+
+			// Traemos los pagos locales para saber su estado en NUESTRA base
+			const ids = transacciones.map((t) => t.transaccionComercioId);
+			const pays = ids.length
+				? await db.Pays.findAll({ where: { id: ids } })
+				: [];
+			const paysById = new Map(pays.map((p) => [String(p.id), p]));
+
+			const procesadas = [];
+			const today = new Date();
+			const formattedDate = today.toISOString().split("T")[0];
+
+			for (const transaccion of transacciones) {
+				const id = transaccion.transaccionComercioId;
+
+				// Solo miramos nuestra base: si el pago ya esta confirmado, no hacemos nada
+				const payLocal = paysById.get(String(id));
+				if (payLocal && payLocal.status === 1) continue;
+
+				// Necesitamos el detalle del pago para poder cancelarlo
+				const detalles = (await getPaysDetails(id)) || [];
+				if (detalles.length === 0) continue; // no existe en nuestra base, nada que procesar
+
+				// Esta pagado en la transaccion y NO confirmado en nuestra base -> proceso completo
+				const payActualizado = await updatePay({
+					id,
+					status: 1,
+					message: (transaccion.detalle || "") + " - Omitido por webhook",
+					id_external: null,
+				});
+
+				const comprobantes = detalles.map((det) => det.reference.toUpperCase());
+
+				await Promise.all(
+					detalles.map((det) =>
+						paysCancel({
+							CompCancelado: det.reference.toUpperCase(),
+							FechaCobro: formattedDate,
+							Procesado: 0,
+							CodBanco: 1,
+							cuota: det.cuota,
+						})
+					)
+				);
+
+				procesadas.push({
+					id,
+					monto: transaccion.monto,
+					fecha: transaccion.fecha,
+					pago: payActualizado,
+					comprobantes,
+				});
+			}
+
+			return res.status(200).json({
+				message: "Reconciliacion finalizada",
+				revisadas: transacciones.length,
+				totalProcesadas: procesadas.length,
+				procesadas,
+			});
+		} catch (e) {
+			return res.status(500).json({ message: "Error en el servidor: " + e.message });
+		}
+	};
 
 	async function voucherCustomer(req, res) {
 		try {
@@ -231,6 +336,7 @@ module.exports = {
 	payLink,
 	paymentStatus,
 	voucherCustomer,
-	paymentStatusActual
+	paymentStatusActual,
+	reconcileTransactions
 }
   

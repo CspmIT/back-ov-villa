@@ -67,6 +67,15 @@ const updatePay = async (data) => {
 		}
 		return await db.PaysDetails.findAll(query)
 	}
+
+	// Equivalente a search_payments_macro($ids): busca los pagos locales
+	// cuyos id (TransaccionComercioId) figuran en la lista recibida.
+	async function getPaysByIds(ids = []) {
+		if (!ids || ids.length === 0) return []
+		return await db.Pays.findAll({
+			where: { id: { [Op.in]: ids } },
+		})
+	}
 	
 
 const enabledMethods = async () => {

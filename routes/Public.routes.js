@@ -19,7 +19,7 @@ const { Commentaries, Popups, addPopup, addInformation, Informations, addImageIn
 } = require('../controllers/Managment.controller')
 const { relationUserCooptech, OVCliente, Methods } = require('../controllers/Cooptech.controller')
 const { testConnectionVilla } = require('../database/MySQL.database')
-const { paymentStatus, paymentStatusActual } = require('../controllers/Payment.controller')
+const { paymentStatus, paymentStatusActual, reconcileTransactions } = require('../controllers/Payment.controller')
 
 // RUTAS PARA AUTH
 
@@ -81,6 +81,8 @@ router.get('/getMethods', Methods);
 router.get('/testConnection', testConnectionVilla);
 
 router.get('/paymentStatusActual', paymentStatusActual);
+
+router.get('/reconcileTransactions', reconcileTransactions);
 
 
 module.exports = router
